@@ -1,0 +1,18 @@
+# Example configuration providing Azure credentials to the operator
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sandbox-operator
+spec:
+  template:
+    spec:
+      containers:
+        - name: sandbox-operator
+          env:
+          - name: AZURE_CLIENT_ID
+            value: ""
+          - name: AZURE_TENANT_ID
+            value: ""
+          - name: AZURE_CLIENT_SECRET
+            value: ""
