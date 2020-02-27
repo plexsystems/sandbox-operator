@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sandbox-operator
+spec:
+  selector:
+    matchLabels:
+      name: sandbox-operator
+  template:
+    metadata:
+      labels:
+        name: sandbox-operator
+    spec:
+      serviceAccountName: sandbox-operator-sa
+      containers:
+        - name: sandbox-operator
+          image: plexsystems/sandbox-operator:v0.3.0
+          command:
+          - sandbox-operator
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: OPERATOR_NAME
+              value: "sandbox-operator"
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: AZURE_AD_RESOURCE
+              value: "https://graph.windows.net"
+
+

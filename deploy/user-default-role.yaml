@@ -1,0 +1,25 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: sandbox-users
+rules:
+- apiGroups:
+  - "operators.plex.dev"
+  resources:
+  - sandboxes
+  verbs:
+  - create
+  - list
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sandbox-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: sandbox-users
+subjects:
+- kind: Group
+  name: system:authenticated

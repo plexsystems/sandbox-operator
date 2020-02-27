@@ -1,0 +1,7 @@
+apiVersion: operators.plex.dev/v1alpha1
+kind: Sandbox
+metadata:
+  name: test
+spec:
+  owners:
+  - foo@bar.com

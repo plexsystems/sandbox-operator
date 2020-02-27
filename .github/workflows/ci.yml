@@ -1,0 +1,35 @@
+name: operator
+on: pull_request
+
+jobs:
+  pr-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout source
+        uses: actions/checkout@v1
+
+      - name: setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: '1.13.5'
+
+      - name: golangci-lint
+        uses: reviewdog/action-golangci-lint@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: unit tests
+        run: make test-unit
+
+      - name: setup kind
+        uses: engineerd/setup-kind@v0.2.0
+        with:
+          version: "v0.6.1"
+
+      - name: setup kustomize
+        uses: imranismail/setup-kustomize@master
+        with:
+          kustomize-version: "3.4.0"
+
+      - name: integration tests
+        run: make test-integration
