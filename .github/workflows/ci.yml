@@ -21,6 +21,9 @@ jobs:
       - name: unit tests
         run: make test-unit
 
+      - name: manifest validation
+        run: make lint
+
       - name: setup kind
         uses: engineerd/setup-kind@v0.2.0
         with:

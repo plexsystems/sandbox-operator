@@ -7,37 +7,48 @@
 
 ## Introduction
 
-The Plex Sandbox Operator is an operator for [Kubernetes](https://kubernetes.io/) that enables authenticated users to a cluster to create their own isolated environments leveraging namespaces.
+The Plex Sandbox Operator is an operator for [Kubernetes](https://kubernetes.io/) that enables authenticated users to a cluster to create their own isolated environments.
 
 ## Installation
 
-The [deploy](deploy) folder contains the necessary Kubernetes manifests to install the operator.
+### Kustomize
 
-## Configuration
+This repository contains a [deploy](deploy) folder which contains all of the manifests required to deploy the operator, as well as a `kustomization.yaml` file.
 
-The sandbox operator can leverage different clients, depending upon how authenitcation is configured for your cluster.
+If you would like to apply your own customizations, reference the `deploy` folder and the version in your `kustomization.yaml`.
 
-### Azure
+```yaml
+resources:
+- git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.3.0
+```
 
-If Azure credentials are provided to the deployment, the operator will perform a lookup of the user in the owners field to fetch that users ObjectID inside of Azure.
+Additionally, the [example](example) folder shows one example of how to customize the operator.
 
-This enables users of the operator to provide a user friendly name, such as their email address, and have the operator itself handle the creation of the bindings within Kubernetes.
+### Bundle
 
-To use the Azure client, include the following environment variables:
+Alternatively, a [bundle.yaml](bundle.yaml) is provided in the root of the repository which can then be applied via `kubectl apply`.
 
-- `AZURE_CLIENT_ID`
-- `AZURE_TENANT_ID`
-- `AZURE_CLIENT_SECRET`
+### Created ClusterRole and ClusterRoleBinding
 
-### Default
+After installing the operator, a `ClusterRole` and `ClusterRoleBinding` will be created for all _authenticated_ users in your cluster.
 
-If no credentials are provided, the operator will create the bindings using the values listed in the owners field.
+### ClusterRole (sandbox-users)
 
-## Usage
+|Verbs|API Groups|Resources|
+|---|---|---|
+|create, list, get|operators.plex.dev|sandboxes|
 
-To use the operator, create and apply a Sandbox CRD to the target cluster.
+### ClusterRoleBinding (sandbox-user)
 
-The following manifest will create a sandbox called `test` (the resulting namespace being `sandbox-test`), and assign the RBAC roles to user `foo@bar.com`
+|API Group|Name|Subjects|
+|---|---|---|
+|rbac.authorization.k8s.io|sandbox-users|system:authenticated|
+
+### Created Sandbox CRD
+
+After installing the operator, a `CustomResourceDefinition` named `Sandbox` will be created.
+
+An example manifest for the Sandbox CRD is as follows:
 
 ```yaml
 apiVersion: operators.plex.dev/v1alpha1
@@ -49,35 +60,152 @@ spec:
   - foo@bar.com
 ```
 
-### Created Resources
+## Configuration
 
-For each sandbox that is created the following resources will be created:
+The sandbox operator can leverage different clients, depending upon how authenitcation is configured for your cluster.
 
-- `Namespace`: Name of the sandbox, prefixed with `sandbox-`.
+### Azure
 
-- `ClusterRole`: Only the permission to delete and view the created sandbox.
+If Azure credentials are provided to the operators environment, it will perform a lookup of each user in the owners field and fetch that users `ObjectID` inside of Azure using [Microsoft Graph](https://docs.microsoft.com/en-us/graph/api/resources/azure-ad-overview?view=graph-rest-1.0).
 
-- `ClusterRoleBinding`: Given to each user listed in the `owners` field of the Sandbox CRD.
+This enables users to create Sandboxes with friendly names, such as their email address, and have the operator itself handle the mapping when creating the Kubernetes resources.
 
-- `Role`: Permissions to manage the contents of the sandbox, but no permission to view secrets.
+To use the Azure client, include the following environment variables:
 
-- `RoleBinding`: Given to each user listed in the `owners` field of the Sandbox CRD.
+- `AZURE_CLIENT_ID`
+- `AZURE_TENANT_ID`
+- `AZURE_CLIENT_SECRET`
 
-- `ResourceQuota`: Defined quotas for the Sandbox.
+### Default
+
+If no credentials are provided, the operator will create the `Role` and `ClusterRole` bindings using the values listed in the owners field.
+
+## Creating a Sandbox
+
+To create a Sandbox, create and apply a Sandbox CRD to the target cluster.
+
+The following will create a Sandbox called `foo` (the resulting namespace being `sandbox-foo`), and assign the RBAC policies to user `foo@bar.com`.
+
+### sandbox-foo.yaml
+
+```yaml
+apiVersion: operators.plex.dev/v1alpha1
+kind: Sandbox
+metadata:
+  name: foo
+spec:
+  owners:
+  - foo@bar.com
+```
+
+```console
+$ kubectl apply -f sandbox-foo.yaml
+sandboxes.operators.plex.dev "foo" created
+```
+
+## Created Resources
+
+Assuming the name of the created Sandbox is named `foo`, the following resources will be created per Sandbox:
+
+### Namespace (sandbox-foo)
+
+### ClusterRole (sandbox-foo-deleter)
+
+|Verbs|API Groups|Resources|ResourceNames|
+|---|---|---|---|
+|delete|operators.plex.dev|sandboxes|sandbox-foo|
+
+This is created so that only users defined in the `owners` field can delete their Sandboxes.
+
+### ClusterRoleBinding (sandbox-foo-deleters)
+
+One `ClusterRoleBinding` per name in the `owners` field
+
+### Role (sandbox-foo-owner)
+
+|Verbs|API Groups|Resources|
+|---|---|---|
+|*|core|pods, pods/log, services, services/finalizers, endpoints, persistentvolumeclaims, events, configmaps, replicationcontrollers|
+|*|apps|deployments, daemonsets, replicasets, statefulsets|
+|*|autoscaling|horizontalpodautoscalers|
+|*|batch|jobs, cronjobs|
+|create, list, get|rbac.authorization.k8s.io|roles, rolebindings|
+
+### RoleBinding (sandbox-foo-owners)
+
+One `RoleBinding` per name in the `owners` field
+
+### ResourceQuota (sandbox-foo-resourcequota)
+
+|Resource Name|Quantity|
+|---|---|
+|ResourceRequestsMemory|1Gi|
+
+## Managing Owners of a Sandbox
+
+After the Sandbox has been created, you can add or remove owners that are associated to it.
+
+For example, to add `more@bar.com` as an owner, add their name to the list of owners and apply the changes:
+
+```yaml
+apiVersion: operators.plex.dev/v1alpha1
+kind: Sandbox
+metadata:
+  name: foo
+spec:
+  owners:
+  - foo@bar.com
+  - more@bar.com
+```
+
+```console
+$ kubectl apply -f sandbox-foo.yaml
+sandboxes.operators.plex.dev "foo" configured
+```
+
+This will cause the operator to add `ClusterRoleBinding` and `RoleBinding` resources to match the owners list.
+
+## Deleting a Sandbox
+
+To delete a Sandbox, delete the Sandbox resource from the cluster:
+
+```console
+$ kubectl delete sandbox foo
+sandboxes.operators.plex.dev "foo" deleted
+```
+
+Deleting a Sandbox will delete the `Namespace` as well as the `ClusterRole` and `ClusterRoleBinding` resources
+
+## Metrics
+
+The operator exposes two metric ports for the `/metrics` end point:
+
+- Port `8383` exposes metrics for the operator itself
+- Port `8686` exposes metrics for the `Sandbox` CRD
+
+Additionally, if [prometheus-operator](https://github.com/coreos/prometheus-operator) is installed into the cluster, a `ServiceMonitor` is created for the operator
 
 ## Development
 
-### Testing
+No external tooling is required to develop and build the operator. However, some tooling is required to run the integration tests and validate the manifests:
+
+- [Kind](https://github.com/kubernetes-sigs/kind)
+- [Kustomize](https://github.com/kubernetes-sigs/kustomize)
+- [Kubeval](https://github.com/instrumenta/kubeval/)
+
+## Testing
+
+The provided `Makefile` contains commands that assist with running the tests for the operator.
 
 ### Unit tests
 
-Run the `make test-unit` command. This will use an in-memory kubernetes client to validate and test your changes.
+`make test-unit` will use an in-memory kubernetes client to validate and test your changes without the need for an external Kubernetes cluster.
 
 ### Integration tests
 
-Run the `make test-integration` command. This will create a Kubernetes cluster for you, using [Kind](https://github.com/kubernetes-sigs/kind), and deploy the operator to it. Afterwards, the integration tests will be ran against the newly created cluster and operator.
+`make test-integration` will create a Kubernetes cluster for you, using Kind, and deploy the operator to it. The integration tests will then be ran against the newly created cluster.
 
-**NOTE:** To test the operator with different versions of Kubernetes, you can use the `KUBERNETES_VERSION` variable to when calling `make`. For example, to test on Kubernetes v1.16.3, run the following command:
+**NOTE:** To test the operator with different versions of Kubernetes, you can use the `KUBERNETES_VERSION` variable when calling `make`. For example, to test on Kubernetes v1.16.3, run the following command:
 
 `make test-integration KUBERNETES_VERSION=v1.16.3`
 

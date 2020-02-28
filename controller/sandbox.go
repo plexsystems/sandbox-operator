@@ -240,50 +240,11 @@ func getRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.Role {
 					"list",
 					"get",
 				},
-				APIGroups: []string{""},
-				Resources: []string{"secrets"},
-			},
-			rbacv1.PolicyRule{
-				Verbs: []string{
-					"update",
-					"patch",
-					"delete",
-				},
-				APIGroups:     []string{""},
-				Resources:     []string{"secrets"},
-				ResourceNames: []string{"placeholder"},
-			},
-			rbacv1.PolicyRule{
-				Verbs: []string{
-					"create",
-					"list",
-					"get",
-				},
 				APIGroups: []string{"rbac.authorization.k8s.io"},
 				Resources: []string{
 					"roles",
 					"rolebindings",
 				},
-			},
-			rbacv1.PolicyRule{
-				Verbs: []string{
-					"update",
-					"patch",
-					"delete",
-				},
-				APIGroups:     []string{"rbac.authorization.k8s.io"},
-				Resources:     []string{"roles"},
-				ResourceNames: []string{"placeholder"},
-			},
-			rbacv1.PolicyRule{
-				Verbs: []string{
-					"update",
-					"patch",
-					"delete",
-				},
-				APIGroups:     []string{"rbac.authorization.k8s.io"},
-				Resources:     []string{"rolebindings"},
-				ResourceNames: []string{"placeholder"},
 			},
 		},
 	}
