@@ -1,5 +1,7 @@
 # sandbox-operator
 
+![sandbox-operator](img/sandbox-operator.png)
+
 ## Introduction
 
 This is a sandbox operator that creates segregated namespaces and sets up RBAC for authenticated users specified in the CRD.
