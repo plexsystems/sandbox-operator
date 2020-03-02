@@ -302,19 +302,52 @@ func getClusterRoleBinding(sandbox operatorsv1alpha1.Sandbox) rbacv1.ClusterRole
 }
 
 func getResourceQuota(sandbox operatorsv1alpha1.Sandbox) corev1.ResourceQuota {
+	var resourceQuotaSpec corev1.ResourceQuotaSpec
+	if sandbox.Spec.Size == "large" {
+		resourceQuotaSpec = getLargeResourceQuotaSpec()
+	} else {
+		resourceQuotaSpec = getSmallResourceQuotaSpec()
+	}
+
 	resourceQuota := corev1.ResourceQuota{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "sandbox-" + sandbox.Name + "-resourcequota",
 			Namespace: "sandbox-" + sandbox.Name,
 		},
-		Spec: corev1.ResourceQuotaSpec{
-			Hard: corev1.ResourceList{
-				corev1.ResourceRequestsMemory: resource.MustParse("1Gi"),
-			},
-		},
+		Spec: resourceQuotaSpec,
 	}
 
 	return resourceQuota
+}
+
+func getLargeResourceQuotaSpec() corev1.ResourceQuotaSpec {
+	resourceQuotaSpec := corev1.ResourceQuotaSpec{
+		Hard: corev1.ResourceList{
+			corev1.ResourceRequestsCPU:            resource.MustParse("1"),
+			corev1.ResourceLimitsCPU:              resource.MustParse("2"),
+			corev1.ResourceRequestsMemory:         resource.MustParse("2Gi"),
+			corev1.ResourceLimitsMemory:           resource.MustParse("8Gi"),
+			corev1.ResourceRequestsStorage:        resource.MustParse("40Gi"),
+			corev1.ResourcePersistentVolumeClaims: resource.MustParse("8"),
+		},
+	}
+
+	return resourceQuotaSpec
+}
+
+func getSmallResourceQuotaSpec() corev1.ResourceQuotaSpec {
+	resourceQuotaSpec := corev1.ResourceQuotaSpec{
+		Hard: corev1.ResourceList{
+			corev1.ResourceRequestsCPU:            resource.MustParse("0.25"),
+			corev1.ResourceLimitsCPU:              resource.MustParse("0.5"),
+			corev1.ResourceRequestsMemory:         resource.MustParse("250Mi"),
+			corev1.ResourceLimitsMemory:           resource.MustParse("500Mi"),
+			corev1.ResourceRequestsStorage:        resource.MustParse("10Gi"),
+			corev1.ResourcePersistentVolumeClaims: resource.MustParse("2"),
+		},
+	}
+
+	return resourceQuotaSpec
 }
 
 // DefaultSubjects represents default subjects

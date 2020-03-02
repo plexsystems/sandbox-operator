@@ -3,5 +3,6 @@ kind: Sandbox
 metadata:
   name: test
 spec:
+  size: small
   owners:
   - foo@bar.com

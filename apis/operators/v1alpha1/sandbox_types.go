@@ -8,6 +8,7 @@ import (
 // +k8s:openapi-gen=true
 type SandboxSpec struct {
 	Owners []string `json:"owners"`
+	Size   string   `json:"size"`
 }
 
 // SandboxStatus defines the observed state of Sandbox

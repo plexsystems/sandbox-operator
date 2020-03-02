@@ -94,6 +94,7 @@ kind: Sandbox
 metadata:
   name: foo
 spec:
+  size: small
   owners:
   - foo@bar.com
 ```
@@ -137,9 +138,33 @@ One `RoleBinding` per name in the `owners` field
 
 ### ResourceQuota (sandbox-foo-resourcequota)
 
+The `ResourceQuota` that is applied to the `Namespace` depends on the `size` of the `Sandbox` that was created.
+
+#### Small
+
 |Resource Name|Quantity|
 |---|---|
-|ResourceRequestsMemory|1Gi|
+|ResourceRequestsCPU|0.25|
+|ResourceLimitsCPU|0.5|
+|ResourceRequestsMemory|250Mi|
+|ResourceLimitsMemory|500Mi|
+|ResourceRequestsStorage|10Gi|
+|ResourcePersistentVolumeClaims|2|
+
+#### Large
+
+|Resource Name|Quantity|
+|---|---|
+|ResourceRequestsCPU|1|
+|ResourceLimitsCPU|2|
+|ResourceRequestsMemory|2Gi|
+|ResourceLimitsMemory|8Gi|
+|ResourceRequestsStorage|40Gi|
+|ResourcePersistentVolumeClaims|8|
+
+```text
+NOTE: If no size is given, small is the default.
+```
 
 ## Managing Owners of a Sandbox
 
@@ -153,6 +178,7 @@ kind: Sandbox
 metadata:
   name: foo
 spec:
+  size: small
   owners:
   - foo@bar.com
   - more@bar.com

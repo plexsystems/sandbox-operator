@@ -37,6 +37,7 @@ func TestSandboxControllerIntegration(t *testing.T) {
 			Name: "test",
 		},
 		Spec: operatorsv1alpha1.SandboxSpec{
+			Size:   "small",
 			Owners: []string{"foo@bar.com"},
 		},
 	}
@@ -78,6 +79,21 @@ func TestSandboxControllerIntegration(t *testing.T) {
 		t.Errorf("role not found: %v", err)
 	}
 
+	resourceQuota := getResourceQuota(sandbox)
+	err = wait.PollImmediate(intervalTime, waitTime, func() (bool, error) {
+		geterr := client.Get(ctx, types.NamespacedName{Namespace: resourceQuota.Namespace, Name: resourceQuota.Name}, &corev1.ResourceQuota{})
+		if geterr == nil {
+			return true, nil
+		} else if errors.IsNotFound(geterr) {
+			return false, nil
+		} else {
+			return false, fmt.Errorf("get resourcequota: %w", geterr)
+		}
+	})
+	if err != nil {
+		t.Errorf("resourcequota not found: %v", err)
+	}
+
 	if err := client.Delete(ctx, &sandbox); err != nil {
 		t.Fatalf("delete sandbox: %v", err)
 	}
@@ -89,7 +105,7 @@ func TestSandboxControllerIntegration(t *testing.T) {
 		} else if err == nil {
 			return false, nil
 		} else {
-			return false, fmt.Errorf("get sandbox: %v", err)
+			return false, fmt.Errorf("get namespace: %v", err)
 		}
 	})
 	if err != nil {
