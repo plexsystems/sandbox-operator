@@ -26,7 +26,7 @@ var (
 	metricsHost               = "0.0.0.0"
 	metricsPort         int32 = 8383
 	operatorMetricsPort int32 = 8686
-	version                   = "0.3.0"
+	version                   = "0.4.0"
 )
 
 func main() {
@@ -73,7 +73,7 @@ func main() {
 		if err == metrics.ErrServiceMonitorNotPresent {
 			log.Println("prometheus-operator not found. skipping service monitor creation")
 		} else {
-			log.Fatalf("create service monitors: %v", err)
+			log.Printf("create service monitors: %v", err)
 		}
 	}
 

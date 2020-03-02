@@ -19,7 +19,7 @@ If you would like to apply your own customizations, reference the `deploy` folde
 
 ```yaml
 resources:
-- git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.3.0
+- git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.4.0
 ```
 
 Additionally, the [example](example) folder shows one example of how to customize the operator.

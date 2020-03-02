@@ -179,7 +179,7 @@ spec:
               fieldPath: metadata.name
         - name: AZURE_AD_RESOURCE
           value: https://graph.windows.net
-        image: plexsystems/sandbox-operator:v0.3.0
+        image: plexsystems/sandbox-operator:v0.4.0
         imagePullPolicy: IfNotPresent
         name: sandbox-operator
       serviceAccountName: sandbox-operator-sa
