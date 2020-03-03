@@ -51,13 +51,13 @@ func NewReconcileSandbox(scheme *runtime.Scheme) (*ReconcileSandbox, error) {
 		return nil, fmt.Errorf("new subjects: %w", err)
 	}
 
-	r := ReconcileSandbox{
+	reconcileSandbox := ReconcileSandbox{
 		client:         client,
 		scheme:         scheme,
 		subjectsClient: subjects,
 	}
 
-	return &r, nil
+	return &reconcileSandbox, nil
 }
 
 // NewClient creates a new kubernetes client
@@ -182,7 +182,8 @@ func (r *ReconcileSandbox) handleReconcile(ctx context.Context, request reconcil
 func getNamespace(sandbox operatorsv1alpha1.Sandbox) corev1.Namespace {
 	namespace := corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "sandbox-" + sandbox.Name,
+			Name:   "sandbox-" + sandbox.Name,
+			Labels: getCommonLabels(),
 		},
 	}
 
@@ -194,6 +195,7 @@ func getRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.Role {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "sandbox-" + sandbox.Name + "-owner",
 			Namespace: "sandbox-" + sandbox.Name,
+			Labels:    getCommonLabels(),
 		},
 		Rules: []rbacv1.PolicyRule{
 			rbacv1.PolicyRule{
@@ -257,6 +259,7 @@ func getRoleBinding(sandbox operatorsv1alpha1.Sandbox) rbacv1.RoleBinding {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "sandbox-" + sandbox.Name + "-owners",
 			Namespace: "sandbox-" + sandbox.Name,
+			Labels:    getCommonLabels(),
 		},
 		RoleRef: rbacv1.RoleRef{
 			APIGroup: "rbac.authorization.k8s.io",
@@ -271,7 +274,8 @@ func getRoleBinding(sandbox operatorsv1alpha1.Sandbox) rbacv1.RoleBinding {
 func getClusterRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.ClusterRole {
 	clusterRole := rbacv1.ClusterRole{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "sandbox-" + sandbox.Name + "-deleter",
+			Name:   "sandbox-" + sandbox.Name + "-deleter",
+			Labels: getCommonLabels(),
 		},
 		Rules: []rbacv1.PolicyRule{
 			rbacv1.PolicyRule{
@@ -289,7 +293,8 @@ func getClusterRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.ClusterRole {
 func getClusterRoleBinding(sandbox operatorsv1alpha1.Sandbox) rbacv1.ClusterRoleBinding {
 	clusterRoleBinding := rbacv1.ClusterRoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "sandbox-" + sandbox.Name + "-deleters",
+			Name:   "sandbox-" + sandbox.Name + "-deleters",
+			Labels: getCommonLabels(),
 		},
 		RoleRef: rbacv1.RoleRef{
 			APIGroup: "rbac.authorization.k8s.io",
@@ -313,6 +318,7 @@ func getResourceQuota(sandbox operatorsv1alpha1.Sandbox) corev1.ResourceQuota {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "sandbox-" + sandbox.Name + "-resourcequota",
 			Namespace: "sandbox-" + sandbox.Name,
+			Labels:    getCommonLabels(),
 		},
 		Spec: resourceQuotaSpec,
 	}
@@ -348,6 +354,14 @@ func getSmallResourceQuotaSpec() corev1.ResourceQuotaSpec {
 	}
 
 	return resourceQuotaSpec
+}
+
+func getCommonLabels() map[string]string {
+	commonLabels := make(map[string]string)
+	commonLabels["app.kubernetes.io/name"] = "sandbox-operator"
+	commonLabels["app.kubernetes.io/part-of"] = "sandbox-operator"
+
+	return commonLabels
 }
 
 // DefaultSubjects represents default subjects

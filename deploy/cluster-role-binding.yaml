@@ -2,6 +2,9 @@ kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: sandbox-operator
+  labels:
+    app.kubernetes.io/name: sandbox-operator
+    app.kubernetes.io/part-of: sandbox-operator
 subjects:
 - kind: ServiceAccount
   name: sandbox-operator-sa
@@ -10,3 +13,4 @@ roleRef:
   kind: ClusterRole
   name: sandbox-operator
   apiGroup: rbac.authorization.k8s.io
+  

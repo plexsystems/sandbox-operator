@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sandbox-operator
+  labels:
+    app.kubernetes.io/name: sandbox-operator
+    app.kubernetes.io/version: "0.4.0"
 spec:
   selector:
     matchLabels:
@@ -29,7 +32,3 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: AZURE_AD_RESOURCE
-              value: "https://graph.windows.net"
-
-
