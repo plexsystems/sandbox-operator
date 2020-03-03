@@ -217,7 +217,6 @@ No external tooling is required to develop and build the operator. However, some
 
 - [Kind](https://github.com/kubernetes-sigs/kind)
 - [Kustomize](https://github.com/kubernetes-sigs/kustomize)
-- [Kubeval](https://github.com/instrumenta/kubeval/)
 
 ## Testing
 

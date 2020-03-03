@@ -1,6 +1,5 @@
 * text=auto
 go.mod text eol=lf
 
-# operator build tools require LF normalization
 /scripts/entrypoint text eol=lf
 /scripts/user_setup text eol=lf

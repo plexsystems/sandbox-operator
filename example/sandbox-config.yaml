@@ -16,3 +16,5 @@ spec:
             value: ""
           - name: AZURE_CLIENT_SECRET
             value: ""
+          - name: AZURE_AD_RESOURCE
+            value: "https://graph.windows.net"

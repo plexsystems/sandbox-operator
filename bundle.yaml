@@ -40,11 +40,17 @@ spec:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  labels:
+    app.kubernetes.io/name: sandbox-operator
+    app.kubernetes.io/part-of: sandbox-operator
   name: sandbox-operator-sa
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    app.kubernetes.io/name: sandbox-operator
+    app.kubernetes.io/part-of: sandbox-operator
   name: sandbox-operator
 rules:
 - apiGroups:
@@ -114,6 +120,9 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    app.kubernetes.io/name: sandbox-operator
+    app.kubernetes.io/part-of: sandbox-operator
   name: sandbox-users
 rules:
 - apiGroups:
@@ -128,6 +137,9 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    app.kubernetes.io/name: sandbox-operator
+    app.kubernetes.io/part-of: sandbox-operator
   name: sandbox-operator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -141,6 +153,9 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    app.kubernetes.io/name: sandbox-operator
+    app.kubernetes.io/part-of: sandbox-operator
   name: sandbox-user
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -153,6 +168,9 @@ subjects:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    app.kubernetes.io/name: sandbox-operator
+    app.kubernetes.io/version: 0.4.0
   name: sandbox-operator
 spec:
   selector:
@@ -177,8 +195,6 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        - name: AZURE_AD_RESOURCE
-          value: https://graph.windows.net
         image: plexsystems/sandbox-operator:v0.4.0
         imagePullPolicy: IfNotPresent
         name: sandbox-operator

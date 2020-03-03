@@ -18,10 +18,6 @@ deploy: image
 	kustomize build example | kubectl apply -f -
 	kubectl wait --for=condition=Ready --timeout=60s pods --all
 
-.PHONY: lint
-lint:
-	kustomize build example | kubeval --ignore-missing-schemas -
-
 .PHONY: test-unit
 test-unit: 
 	go test ./controller -v -count=1
