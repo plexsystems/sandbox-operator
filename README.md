@@ -76,6 +76,10 @@ To use the Azure client, include the following environment variables:
 - `AZURE_TENANT_ID`
 - `AZURE_CLIENT_SECRET`
 
+Your Azure Service Principal will need the following _Application_ permission for the **Azure Active Directory Graph API** (00000002-0000-0000-c000-000000000000):
+
+Directory.Read.All (5778995a-e1bf-45b8-affa-663a9f3f4d04)
+
 ### Default
 
 If no credentials are provided, the operator will create the `Role` and `ClusterRole` bindings using the values listed in the owners field.
