@@ -19,7 +19,7 @@ If you would like to apply your own customizations, reference the `deploy` folde
 
 ```yaml
 resources:
-- git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.5.0
+- git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.6.0
 ```
 
 Additionally, the [example](example) folder shows one example of how to customize the operator.
@@ -131,7 +131,7 @@ One `ClusterRoleBinding` per name in the `owners` field
 |Verbs|API Groups|Resources|
 |---|---|---|
 |*|core|pods, pods/log, pods/portforward, services, services/finalizers, endpoints, persistentvolumeclaims, events, configmaps, replicationcontrollers|
-|*|apps|deployments, daemonsets, replicasets, statefulsets|
+|*|apps, extensions|deployments, daemonsets, replicasets, statefulsets|
 |*|autoscaling|horizontalpodautoscalers|
 |*|batch|jobs, cronjobs|
 |create, list, get|rbac.authorization.k8s.io|roles, rolebindings|

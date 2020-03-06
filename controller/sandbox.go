@@ -215,8 +215,11 @@ func getRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.Role {
 				},
 			},
 			rbacv1.PolicyRule{
-				Verbs:     []string{"*"},
-				APIGroups: []string{"apps"},
+				Verbs: []string{"*"},
+				APIGroups: []string{
+					"apps",
+					"extensions",
+				},
 				Resources: []string{
 					"deployments",
 					"daemonsets",
