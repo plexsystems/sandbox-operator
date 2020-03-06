@@ -130,7 +130,7 @@ One `ClusterRoleBinding` per name in the `owners` field
 
 |Verbs|API Groups|Resources|
 |---|---|---|
-|*|core|pods, pods/log, services, services/finalizers, endpoints, persistentvolumeclaims, events, configmaps, replicationcontrollers|
+|*|core|pods, pods/log, pods/portforward, services, services/finalizers, endpoints, persistentvolumeclaims, events, configmaps, replicationcontrollers|
 |*|apps|deployments, daemonsets, replicasets, statefulsets|
 |*|autoscaling|horizontalpodautoscalers|
 |*|batch|jobs, cronjobs|

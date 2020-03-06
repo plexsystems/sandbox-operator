@@ -204,6 +204,7 @@ func getRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.Role {
 				Resources: []string{
 					"pods",
 					"pods/log",
+					"pods/portforward",
 					"services",
 					"services/finalizers",
 					"endpoints",
