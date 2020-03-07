@@ -8,6 +8,8 @@ resources:
 patchesStrategicMerge:
 - sandbox-config.yaml
 
+# NOTE: This is used for testing only
+# It is recommended to use the latest version of the operator
 images:
 - name: plexsystems/sandbox-operator
   newName: sandbox-operator
