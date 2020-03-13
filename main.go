@@ -26,7 +26,7 @@ var (
 	metricsHost               = "0.0.0.0"
 	metricsPort         int32 = 8383
 	operatorMetricsPort int32 = 8686
-	version                   = "0.6.0"
+	version                   = "0.7.0"
 )
 
 func main() {

@@ -4,7 +4,7 @@ metadata:
   name: sandbox-operator
   labels:
     app.kubernetes.io/name: sandbox-operator
-    app.kubernetes.io/version: "0.6.0"
+    app.kubernetes.io/version: "0.7.0"
 spec:
   selector:
     matchLabels:
@@ -17,7 +17,7 @@ spec:
       serviceAccountName: sandbox-operator-sa
       containers:
         - name: sandbox-operator
-          image: plexsystems/sandbox-operator:v0.6.0
+          image: plexsystems/sandbox-operator:v0.7.0
           command:
           - sandbox-operator
           imagePullPolicy: IfNotPresent

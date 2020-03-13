@@ -170,7 +170,7 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/name: sandbox-operator
-    app.kubernetes.io/version: "0.6.0"
+    app.kubernetes.io/version: "0.7.0"
   name: sandbox-operator
 spec:
   selector:
@@ -195,7 +195,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        image: plexsystems/sandbox-operator:v0.6.0
+        image: plexsystems/sandbox-operator:v0.7.0
         imagePullPolicy: IfNotPresent
         name: sandbox-operator
       serviceAccountName: sandbox-operator-sa
