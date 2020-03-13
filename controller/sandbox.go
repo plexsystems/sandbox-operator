@@ -252,6 +252,13 @@ func getRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.Role {
 					"rolebindings",
 				},
 			},
+			rbacv1.PolicyRule{
+				Verbs:     []string{"create"},
+				APIGroups: []string{""},
+				Resources: []string{
+					"secrets",
+				},
+			},
 		},
 	}
 
