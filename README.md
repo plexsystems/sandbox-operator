@@ -63,9 +63,11 @@ spec:
 
 ## Configuration
 
+### Clients
+
 The Sandbox operator can leverage different clients, depending upon how authenitcation is configured for your cluster.
 
-### Azure
+#### Azure
 
 If Azure credentials are provided to the operators environment, it will perform a lookup of each user in the `owners` field and fetch that users `ObjectID` inside of Azure using the [Microsoft Graph API](https://docs.microsoft.com/en-us/graph/api/resources/azure-ad-overview?view=graph-rest-1.0).
 
@@ -81,9 +83,20 @@ Your Azure Service Principal will need the following _Application_ permission fo
 
 Directory.Read.All (5778995a-e1bf-45b8-affa-663a9f3f4d04)
 
-### Default
+#### Default
 
 If no credentials are provided, the operator will create the `Role` and `ClusterRole` bindings using the values listed in the `owners` field.
+
+### Docker Pull Secrets
+
+By default, the operator will not create any secrets in the provisioned namespace. 
+
+**If the `PULL_SECRET_NAME` environment variable is set, the operator will copy your clusters pull secret to the provisioned namespace and patch the default service account.**
+
+`PULL_SECRET_NAME` should be the name of the pull secret that exists in your cluster. By default, the operator will look for your secret in the `default` namespace.
+
+To have the operator look in a different namespace for the pull secret, use the `PULL_SECRET_NAMESPACE` environment variable.
+
 
 ## Creating a Sandbox
 

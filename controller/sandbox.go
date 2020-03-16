@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -14,6 +15,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
@@ -176,7 +178,57 @@ func (r *ReconcileSandbox) handleReconcile(ctx context.Context, request reconcil
 		return fmt.Errorf("reconcile ClusterRoleBinding: %w", err)
 	}
 
+	if os.Getenv("PULL_SECRET_NAME") != "" {
+		secretName := os.Getenv("PULL_SECRET_NAME")
+		secretData, err := getDockerSecretData(ctx, r.client, secretName)
+		if err != nil {
+			return fmt.Errorf("get secret data: %w", err)
+		}
+
+		secret := getDockerSecret(sandbox, secretName, secretData)
+		_, err = ctrl.CreateOrUpdate(ctx, r.client, &secret, func() error {
+			return controllerutil.SetControllerReference(&sandbox, &secret, r.scheme)
+		})
+		if err != nil {
+			return fmt.Errorf("reconcile docker Secret: %w", err)
+		}
+
+		var defaultServiceAccount corev1.ServiceAccount
+		if err := r.client.Get(ctx, types.NamespacedName{Name: "default", Namespace: namespace.Name}, &defaultServiceAccount); err != nil {
+			return fmt.Errorf("get default service account: %w", err)
+		}
+
+		patchBytes, err := getPatchBytes(secretName)
+		if err != nil {
+			return fmt.Errorf("get patch bytes: %w", err)
+		}
+
+		patch := client.ConstantPatch(types.StrategicMergePatchType, patchBytes)
+		if err := r.client.Patch(ctx, &defaultServiceAccount, patch, &client.PatchOptions{}); err != nil {
+			return fmt.Errorf("patch service account: %w", err)
+		}
+	}
+
 	return nil
+}
+
+func getPatchBytes(secretName string) ([]byte, error) {
+	type imagePullSecretsPatch struct {
+		ImagePullSecrets []corev1.LocalObjectReference `json:"imagePullSecrets,omitempty"`
+	}
+
+	patch := imagePullSecretsPatch{
+		ImagePullSecrets: []corev1.LocalObjectReference{
+			{Name: secretName},
+		},
+	}
+
+	patchString, err := json.Marshal(patch)
+	if err != nil {
+		return nil, fmt.Errorf("patching default service account: %w", err)
+	}
+
+	return patchString, nil
 }
 
 func getNamespace(sandbox operatorsv1alpha1.Sandbox) corev1.Namespace {
@@ -365,6 +417,41 @@ func getSmallResourceQuotaSpec() corev1.ResourceQuotaSpec {
 	}
 
 	return resourceQuotaSpec
+}
+
+func getDockerSecretData(ctx context.Context, client client.Client, secretName string) ([]byte, error) {
+	var secretNamespace string
+	if os.Getenv("PULL_SECRET_NAMESPACE") != "" {
+		secretNamespace = os.Getenv("PULL_SECRET_NAMESPACE")
+	} else {
+		secretNamespace = "default"
+	}
+
+	var dockerSecret corev1.Secret
+	if err := client.Get(ctx, types.NamespacedName{Name: secretName, Namespace: secretNamespace}, &dockerSecret); err != nil {
+		return nil, fmt.Errorf("get docker secret: %w", err)
+	}
+
+	if _, ok := dockerSecret.Data[corev1.DockerConfigJsonKey]; !ok {
+		return nil, fmt.Errorf("secret missing dockerconfig data")
+	}
+
+	return dockerSecret.Data[corev1.DockerConfigJsonKey], nil
+}
+
+func getDockerSecret(sandbox operatorsv1alpha1.Sandbox, secretName string, secretData []byte) corev1.Secret {
+	dockerSecret := corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      secretName,
+			Namespace: "sandbox-" + sandbox.Name,
+		},
+		Data: map[string][]byte{
+			corev1.DockerConfigJsonKey: []byte(secretData),
+		},
+		Type: corev1.SecretTypeDockerConfigJson,
+	}
+
+	return dockerSecret
 }
 
 func getCommonLabels() map[string]string {
