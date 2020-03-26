@@ -17,6 +17,17 @@ This repository contains a [deploy](deploy) folder which contains all of the man
 
 If you would like to apply your own customizations, reference the `deploy` folder and the version in your `kustomization.yaml`.
 
+#### Kustomize v2 
+(version used in `kubectl apply -k .`)
+
+```yaml
+bases:
+- git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.8.0
+```
+
+#### Kustomize v3
+Latest version of Kustomize if installed as a standalone.  Also version embedded in flux.
+
 ```yaml
 resources:
 - git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.8.0
