@@ -342,13 +342,7 @@ func getClusterRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.ClusterRole {
 		},
 		Rules: []rbacv1.PolicyRule{
 			rbacv1.PolicyRule{
-				Verbs:         []string{"delete"},
-				APIGroups:     []string{"operators.plex.dev"},
-				Resources:     []string{"sandboxes"},
-				ResourceNames: []string{sandbox.Name},
-			},
-			rbacv1.PolicyRule{
-				Verbs:         []string{"patch"},
+				Verbs:         []string{"*"},
 				APIGroups:     []string{"operators.plex.dev"},
 				Resources:     []string{"sandboxes"},
 				ResourceNames: []string{sandbox.Name},
