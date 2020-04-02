@@ -43,13 +43,13 @@ A [bundle.yaml](bundle.yaml) is provided in the root of the repository which can
 
 A `ClusterRole` resource and a `ClusterRoleBinding` resource will be created to enable authenticated users to create Sandbox resources.
 
-#### ClusterRole (sandbox-users)
+#### ClusterRole (sandbox-user)
 
 |Verbs|API Groups|Resources|
 |---|---|---|
 |create, list, get|operators.plex.dev|sandboxes|
 
-#### ClusterRoleBinding (sandbox-user)
+#### ClusterRoleBinding (sandbox-users)
 
 |API Group|Name|Subjects|
 |---|---|---|
@@ -152,7 +152,7 @@ This is created so that only users defined in the `owners` field can delete thei
 
 One `ClusterRoleBinding` per name in the `owners` field. Bindings are added and removed as users are added and removed from the `owners` field.
 
-### Role (sandbox-foo-user)
+### Role (sandbox-foo-owner)
 
 |Verbs|API Groups|Resources|
 |---|---|---|
@@ -163,7 +163,7 @@ One `ClusterRoleBinding` per name in the `owners` field. Bindings are added and 
 |*|batch|jobs, cronjobs|
 |create, list, get|rbac.authorization.k8s.io|roles, rolebindings|
 
-### RoleBinding (sandbox-foo-users)
+### RoleBinding (sandbox-foo-owners)
 
 One `RoleBinding` per name in the `owners` field. Bindings are added and removed as users are added and removed from the `owners` field.
 
