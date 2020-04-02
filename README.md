@@ -139,7 +139,7 @@ Assuming the name of the created Sandbox is named `foo`, the following resources
 
 ### Namespace (sandbox-foo)
 
-### ClusterRole (sandbox-foo-admins)
+### ClusterRole (sandbox-foo-admin)
 
 |Verbs|API Groups|Resources|ResourceNames|
 |---|---|---|---|
@@ -148,11 +148,11 @@ Assuming the name of the created Sandbox is named `foo`, the following resources
 
 This is created so that only users defined in the `owners` field can delete their Sandboxes.
 
-### ClusterRoleBinding (sandbox-foo-admin)
+### ClusterRoleBinding (sandbox-foo-admins)
 
 One `ClusterRoleBinding` per name in the `owners` field. Bindings are added and removed as users are added and removed from the `owners` field.
 
-### Role (sandbox-foo-users)
+### Role (sandbox-foo-user)
 
 |Verbs|API Groups|Resources|
 |---|---|---|
@@ -163,7 +163,7 @@ One `ClusterRoleBinding` per name in the `owners` field. Bindings are added and 
 |*|batch|jobs, cronjobs|
 |create, list, get|rbac.authorization.k8s.io|roles, rolebindings|
 
-### RoleBinding (sandbox-foo-user)
+### RoleBinding (sandbox-foo-users)
 
 One `RoleBinding` per name in the `owners` field. Bindings are added and removed as users are added and removed from the `owners` field.
 
