@@ -17,20 +17,22 @@ This repository contains a [deploy](deploy) folder which contains all of the man
 
 If you would like to apply your own customizations, reference the `deploy` folder and the version in your `kustomization.yaml`.
 
-#### Kustomize v2 
+#### Kustomize v2
+
 (version used in `kubectl apply -k .`)
 
 ```yaml
 bases:
-- git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.8.0
+- git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.9.0
 ```
 
 #### Kustomize v3
+
 Latest version of Kustomize if installed as a standalone.  Also version embedded in flux.
 
 ```yaml
 resources:
-- git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.8.0
+- git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.9.0
 ```
 
 The [example](example) folder shows one example of how to customize the operator.
@@ -100,14 +102,13 @@ If no credentials are provided, the operator will create the `Role` and `Cluster
 
 ### Docker Pull Secrets
 
-By default, the operator will not create any secrets in the provisioned namespace. 
+By default, the operator will not create any secrets in the provisioned namespace.
 
 **If the `PULL_SECRET_NAME` environment variable is set, the operator will copy your clusters pull secret to the provisioned namespace and patch the default service account.**
 
 `PULL_SECRET_NAME` should be the name of the pull secret that exists in your cluster. By default, the operator will look for your secret in the `default` namespace.
 
 To have the operator look in a different namespace for the pull secret, use the `PULL_SECRET_NAMESPACE` environment variable.
-
 
 ## Creating a Sandbox
 
@@ -144,7 +145,6 @@ Assuming the name of the created Sandbox is named `foo`, the following resources
 |Verbs|API Groups|Resources|ResourceNames|
 |---|---|---|---|
 |*|operators.plex.dev|sandboxes|sandbox-foo|
-
 
 This is created so that only users defined in the `owners` field can delete their Sandboxes.
 
