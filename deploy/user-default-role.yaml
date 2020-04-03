@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: sandbox-users
+  name: sandbox-user
   labels:
     app.kubernetes.io/name: sandbox-operator
     app.kubernetes.io/part-of: sandbox-operator
@@ -18,14 +18,14 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: sandbox-user
+  name: sandbox-users
   labels:
     app.kubernetes.io/name: sandbox-operator
     app.kubernetes.io/part-of: sandbox-operator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: sandbox-users
+  name: sandbox-user
 subjects:
 - kind: Group
   name: system:authenticated

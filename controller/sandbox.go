@@ -337,12 +337,12 @@ func getRoleBinding(sandbox operatorsv1alpha1.Sandbox) rbacv1.RoleBinding {
 func getClusterRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.ClusterRole {
 	clusterRole := rbacv1.ClusterRole{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:   "sandbox-" + sandbox.Name + "-deleter",
+			Name:   "sandbox-" + sandbox.Name + "-admin",
 			Labels: getCommonLabels(),
 		},
 		Rules: []rbacv1.PolicyRule{
 			rbacv1.PolicyRule{
-				Verbs:         []string{"delete"},
+				Verbs:         []string{"*"},
 				APIGroups:     []string{"operators.plex.dev"},
 				Resources:     []string{"sandboxes"},
 				ResourceNames: []string{sandbox.Name},
@@ -356,13 +356,13 @@ func getClusterRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.ClusterRole {
 func getClusterRoleBinding(sandbox operatorsv1alpha1.Sandbox) rbacv1.ClusterRoleBinding {
 	clusterRoleBinding := rbacv1.ClusterRoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:   "sandbox-" + sandbox.Name + "-deleters",
+			Name:   "sandbox-" + sandbox.Name + "-admins",
 			Labels: getCommonLabels(),
 		},
 		RoleRef: rbacv1.RoleRef{
 			APIGroup: "rbac.authorization.k8s.io",
 			Kind:     "ClusterRole",
-			Name:     "sandbox-" + sandbox.Name + "-deleter",
+			Name:     "sandbox-" + sandbox.Name + "-admin",
 		},
 	}
 
