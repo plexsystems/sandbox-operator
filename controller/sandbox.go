@@ -305,7 +305,10 @@ func getRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.Role {
 				},
 			},
 			rbacv1.PolicyRule{
-				Verbs:     []string{"create"},
+				Verbs: []string{
+					"create",
+					"delete",
+				},
 				APIGroups: []string{""},
 				Resources: []string{
 					"secrets",
