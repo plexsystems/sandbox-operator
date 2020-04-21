@@ -23,7 +23,7 @@ If you would like to apply your own customizations, reference the `deploy` folde
 
 ```yaml
 bases:
-- git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.9.0
+- git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.10.0
 ```
 
 #### Kustomize v3
@@ -32,7 +32,7 @@ Latest version of Kustomize if installed as a standalone.  Also version embedded
 
 ```yaml
 resources:
-- git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.9.0
+- git::https://github.com/plexsystems/sandbox-operator.git//deploy?ref=v0.10.0
 ```
 
 The [example](example) folder shows one example of how to customize the operator.
