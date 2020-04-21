@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	operatorsv1alpha1 "github.com/plexsystems/sandbox-operator/apis/operators/v1alpha1"
 
@@ -250,7 +251,7 @@ func getRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.Role {
 			Labels:    getCommonLabels(),
 		},
 		Rules: []rbacv1.PolicyRule{
-			rbacv1.PolicyRule{
+			{
 				Verbs:     []string{"*"},
 				APIGroups: []string{""},
 				Resources: []string{
@@ -266,7 +267,7 @@ func getRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.Role {
 					"replicationcontrollers",
 				},
 			},
-			rbacv1.PolicyRule{
+			{
 				Verbs: []string{"*"},
 				APIGroups: []string{
 					"apps",
@@ -279,12 +280,12 @@ func getRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.Role {
 					"statefulsets",
 				},
 			},
-			rbacv1.PolicyRule{
+			{
 				Verbs:     []string{"*"},
 				APIGroups: []string{"autoscaling"},
 				Resources: []string{"horizontalpodautoscalers"},
 			},
-			rbacv1.PolicyRule{
+			{
 				Verbs:     []string{"*"},
 				APIGroups: []string{"batch"},
 				Resources: []string{
@@ -292,7 +293,7 @@ func getRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.Role {
 					"cronjobs",
 				},
 			},
-			rbacv1.PolicyRule{
+			{
 				Verbs: []string{
 					"create",
 					"list",
@@ -304,7 +305,7 @@ func getRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.Role {
 					"rolebindings",
 				},
 			},
-			rbacv1.PolicyRule{
+			{
 				Verbs: []string{
 					"create",
 					"delete",
@@ -344,7 +345,7 @@ func getClusterRole(sandbox operatorsv1alpha1.Sandbox) rbacv1.ClusterRole {
 			Labels: getCommonLabels(),
 		},
 		Rules: []rbacv1.PolicyRule{
-			rbacv1.PolicyRule{
+			{
 				Verbs:         []string{"*"},
 				APIGroups:     []string{"operators.plex.dev"},
 				Resources:     []string{"sandboxes"},
@@ -374,7 +375,7 @@ func getClusterRoleBinding(sandbox operatorsv1alpha1.Sandbox) rbacv1.ClusterRole
 
 func getResourceQuota(sandbox operatorsv1alpha1.Sandbox) corev1.ResourceQuota {
 	var resourceQuotaSpec corev1.ResourceQuotaSpec
-	if sandbox.Spec.Size == "large" {
+	if strings.EqualFold(sandbox.Spec.Size, "large") {
 		resourceQuotaSpec = getLargeResourceQuotaSpec()
 	} else {
 		resourceQuotaSpec = getSmallResourceQuotaSpec()

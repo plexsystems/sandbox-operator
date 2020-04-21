@@ -169,7 +169,7 @@ One `RoleBinding` per name in the `owners` field. Bindings are added and removed
 
 ### ResourceQuota (sandbox-foo-resourcequota)
 
-The `ResourceQuota` that is applied to the `Namespace` depends on the `size` of the `Sandbox` that was created.
+The `ResourceQuota` that is applied to the `Namespace` depends on the `size` of the `Sandbox` that was created. Defaults to `small` if no size is given.
 
 #### Small
 
@@ -192,10 +192,6 @@ The `ResourceQuota` that is applied to the `Namespace` depends on the `size` of 
 |ResourceLimitsMemory|8Gi|
 |ResourceRequestsStorage|40Gi|
 |ResourcePersistentVolumeClaims|8|
-
-```text
-NOTE: If no size is given, small is the default.
-```
 
 ## Managing Owners of a Sandbox
 
