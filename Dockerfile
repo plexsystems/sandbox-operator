@@ -9,7 +9,7 @@ COPY . .
 
 RUN GOOS=linux GOARCH=amd64 go build -o sandbox-operator main.go
 
-FROM alpine:3.11.2
+FROM alpine:3.11.6
 ENV OPERATOR=/usr/local/bin/sandbox-operator \
     USER_UID=1001 \
     USER_NAME=sandbox-operator
